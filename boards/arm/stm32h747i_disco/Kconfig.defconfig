@@ -38,6 +38,27 @@ config CLOCK_STM32_D3PPRE
 config STM32H7_DUAL_CORE
 	default y
 
+config DISK_ACCESS_STM32_SDMMC
+	default n
+
+config DISK_ACCESS_STM32_CLOCK_SOURCE_PLL2_R
+
+# PLL2_VCO Input = HSE_VALUE/PLL2_M = 5 Mhz
+# PLL2_VCO Output = PLL2_VCO Input * PLL_N = 500 Mhz
+# SDMMC Kernel Clock = PLL2_VCO Output/PLL_R = 500/5 = 100 Mhz
+
+config CLOCK_STM32_PLL2_M_DIVISOR
+	default 5
+
+config CLOCK_STM32_PLL2_N_MULTIPLIER
+	default 100
+
+config CLOCK_STM32_PLL2_P_ENABLE
+	default y
+
+config CLOCK_STM32_PLL2_R_DIVISOR
+	default 5
+
 if NETWORKING
 
 config NET_L2_ETHERNET
