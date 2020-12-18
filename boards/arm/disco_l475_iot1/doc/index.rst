@@ -125,6 +125,16 @@ The Zephyr Disco L475 IoT board configuration supports the following hardware fe
 +-----------+------------+-------------------------------------+
 | ADC       | on-chip    | adc                                 |
 +-----------+------------+-------------------------------------+
+| QSPI NOR  | on-chip    | flash                               |
++-----------+------------+-------------------------------------+
+
+Note: QSPI NOR Support could be tested using ``samples/drivers/flash_shell``.
+      Once the shell is started, run following command:
+
+.. code-block:: console
+
+   uart:~$ flash set_device MX25R6435F
+
 
 Other hardware features are not yet supported on this Zephyr port.
 
