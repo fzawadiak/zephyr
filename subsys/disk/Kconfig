@@ -143,22 +143,6 @@ config DISK_ACCESS_STM32_SDMMC
 	help
 	  File system on sdmmc accessed through stm32 sdmmc.
 
-choice DISK_ACCESS_STM32_CLOCK_SOURCE
-	prompt "STM32 SDMMC Clock Source"
-	depends on DISK_ACCESS_STM32_SDMMC
-	help
-	  Both sdmmc peripherials can be clocked either by PLL1 Q or PLL2 R.
-
-config DISK_ACCESS_STM32_CLOCK_SOURCE_PLL1_Q
-	bool "PLL1 Q"
-
-config DISK_ACCESS_STM32_CLOCK_SOURCE_PLL2_R
-	select CLOCK_STM32_PLL2_ENABLE
-	select CLOCK_STM32_PLL2_R_ENABLE
-	bool "PLL2 R"
-
-endchoice
-
 config DISK_STM32_SDMMC_VOLUME_NAME
 	string "SDMMC Disk mount point or drive name"
 	depends on DISK_ACCESS_STM32_SDMMC

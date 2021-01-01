@@ -64,12 +64,6 @@ static int stm32_sdmmc_clock_enable(struct stm32_sdmmc_priv *priv)
 		;
 
 	LL_RCC_SetSDMMCClockSource(LL_RCC_SDMMC1_CLKSOURCE_PLLSAI1);
-#elif defined(CONFIG_SOC_SERIES_STM32H7X)
-#if defined(CONFIG_DISK_ACCESS_STM32_CLOCK_SOURCE_PLL1_Q)
-	LL_RCC_SetSDMMCClockSource(LL_RCC_SDMMC_CLKSOURCE_PLL1Q);
-#elif defined(CONFIG_DISK_ACCESS_STM32_CLOCK_SOURCE_PLL2_R)
-	LL_RCC_SetSDMMCClockSource(LL_RCC_SDMMC_CLKSOURCE_PLL2R);
-#endif /* CONFIG_SOC_SERIES_STM32H7X */
 #endif
 
 	clock = device_get_binding(STM32_CLOCK_CONTROL_NAME);
@@ -410,7 +404,7 @@ err_card_detect:
 #if DT_NODE_HAS_STATUS(DT_DRV_INST(0), okay)
 
 static const struct soc_gpio_pinctrl sdmmc_pins_1[] =
-	ST_STM32_DT_INST_PINCTRL(0, 0);
+						ST_STM32_DT_INST_PINCTRL(0, 0);
 
 static struct stm32_sdmmc_priv stm32_sdmmc_priv_1 = {
 	.hsd = {
@@ -442,45 +436,6 @@ static struct stm32_sdmmc_priv stm32_sdmmc_priv_1 = {
 
 DEVICE_DT_INST_DEFINE(0, disk_stm32_sdmmc_init, device_pm_control_nop,
 		    &stm32_sdmmc_priv_1, NULL, APPLICATION,
-		    CONFIG_KERNEL_INIT_PRIORITY_DEVICE,
-		    NULL);
-#endif
-
-#if DT_NODE_HAS_STATUS(DT_DRV_INST(1), okay)
-
-static const struct soc_gpio_pinctrl sdmmc_pins_2[] =
-	ST_STM32_DT_INST_PINCTRL(1, 0);
-
-static struct stm32_sdmmc_priv stm32_sdmmc_priv_2 = {
-	.hsd = {
-		.Instance = (SDMMC_TypeDef *)DT_INST_REG_ADDR(1),
-	},
-#if DT_INST_NODE_HAS_PROP(1, cd_gpios)
-	.cd = {
-		.name = DT_INST_GPIO_LABEL(1, cd_gpios),
-		.pin = DT_INST_GPIO_PIN(1, cd_gpios),
-		.flags = DT_INST_GPIO_FLAGS(1, cd_gpios),
-	},
-#endif
-#if DT_INST_NODE_HAS_PROP(1, pwr_gpios)
-	.pe = {
-		.name = DT_INST_GPIO_LABEL(1, pwr_gpios),
-		.pin = DT_INST_GPIO_PIN(1, pwr_gpios),
-		.flags = DT_INST_GPIO_FLAGS(1, pwr_gpios),
-	},
-#endif
-	.pclken = {
-		.bus = DT_INST_CLOCKS_CELL(1, bus),
-		.enr = DT_INST_CLOCKS_CELL(1, bits),
-	},
-	.pinctrl = {
-		.list = sdmmc_pins_2,
-		.len = ARRAY_SIZE(sdmmc_pins_2)
-	}
-};
-
-DEVICE_DT_INST_DEFINE(1, disk_stm32_sdmmc_init, device_pm_control_nop,
-		    &stm32_sdmmc_priv_2, NULL, APPLICATION,
 		    CONFIG_KERNEL_INIT_PRIORITY_DEVICE,
 		    NULL);
 #endif
