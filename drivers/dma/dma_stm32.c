@@ -97,14 +97,15 @@ static void dma_stm32_irq_handler(const struct device *dev, uint32_t id)
 	}
 
 	/* the dma stream id is in range from STREAM_OFFSET..<dma-requests> */
-	if (dma_stm32_is_tc_active(dma, id)) {
-		dma_stm32_clear_tc(dma, id);
+	if (dma_stm32_is_ht_active(dma, id)) {
+		stream->dma_callback(dev, stream->user_data, callback_arg, 0);
+		dma_stm32_clear_ht(dma, id);
+	} else if (dma_stm32_is_tc_active(dma, id)) {
 #ifdef CONFIG_DMAMUX_STM32
 		stream->busy = false;
 #endif
 		stream->dma_callback(dev, stream->user_data, callback_arg, 0);
-	} else if (dma_stm32_is_ht_active(dma, id)) {
-		dma_stm32_clear_ht(dma, id);
+		dma_stm32_clear_tc(dma, id);
 	} else if (stm32_dma_is_unexpected_irq_happened(dma, id)) {
 		LOG_ERR("Unexpected irq happened.");
 		stream->dma_callback(dev, stream->user_data,
@@ -250,6 +251,18 @@ DMA_STM32_EXPORT_API int dma_stm32_configure(const struct device *dev,
 
 	/* give channel from index 0 */
 	id = id - STREAM_OFFSET;
+
+	/* Check potential DMA override */
+	if (config->linked_channel == 0x7F) {
+		/* DMA channel is overridden by HAL DMA
+		 * Retain that the channel is busy and proceed to the minimal
+		 * configuration to properly route the IRQ
+		 */
+		stream->busy = true;
+		stream->dma_callback = config->dma_callback;
+		stream->user_data = config->user_data;
+		return 0;
+	}
 
 	if (id >= dev_config->max_streams) {
 		LOG_ERR("cannot configure the dma stream %d.", id);
